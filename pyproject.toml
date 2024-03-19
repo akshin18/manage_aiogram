@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "manager-aiogram"
+version = "0.1.0"
+description = ""
+authors = ["Akshin <57838359+akshin18@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiogram = "^3.4.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

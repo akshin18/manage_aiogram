@@ -8,6 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 aiogram = "^3.4.1"
+pydantic-settings = "^2.2.1"
+tortoise-orm = "^0.20.0"
 
 
 [build-system]

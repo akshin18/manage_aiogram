@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     DB_URL: SecretStr
     CHANNEL_ID: SecretStr
     CHAT_IDS: List
+    manager_index: int = 0
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(__file__), ".env"),

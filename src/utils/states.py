@@ -6,3 +6,6 @@ class FirstMessage(StatesGroup):
 
 class PushMessage(StatesGroup):
     push = State()
+
+class AddChat(StatesGroup):
+    add_chat = State()

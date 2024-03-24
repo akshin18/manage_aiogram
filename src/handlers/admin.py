@@ -11,6 +11,12 @@ from utils.states import FirstMessage, PushMessage
 
 router = Router()
 
+# @router.message(AdminFilter())
+# async def admin_handler(message: Message):
+#     q = await message.bot.get_chat(config.CHAT_IDS[0])
+#     print(q)
+
+
 
 @router.message(StateFilter("*"), F.text == "Back")
 async def admin_back_handler(message: Message, state: FSMContext):

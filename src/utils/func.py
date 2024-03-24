@@ -5,7 +5,7 @@ from typing import Union
 
 from aiogram.types import Message, ChatJoinRequest, ContentType
 
-from config_reader import config
+from config_reader import config, google_sheet
 from db.models import User
 from app import bot
 
@@ -83,13 +83,26 @@ async def req_user(message: Union[Message, ChatJoinRequest]):
         name=message.from_user.full_name,
         username=message.from_user.username,
         user_id=message.from_user.id,
-        manager_index=config.manager_index,
+        chat_id=config.CHAT_IDS[config.manager_index],
+        invite_link=message.invite_link.invite_link if isinstance(message, ChatJoinRequest) else "None"
     )
+    add_user_to_sheet(user)
     if config.first_message != None:
         await send_message(config.first_message, message.from_user.id)
     else:
-        await bot.send_message(config.ADMINS_ID[0],text="Нет Первого сообщения")
+        if config.ADMINS_ID != []:
+            await bot.send_message(config.ADMINS_ID[0],text="Нет Первого сообщения")
+            await message.bot.send_message(message.from_user.id, "))")
 
+def add_user_to_sheet(user:User):
+    google_sheet.create_user(
+        user.created_at.strftime("%d/%m/%Y %H:%M"),
+        user.user_id,
+        user.chat_id,
+        user.invite_link,
+        "true",
+        username=user.username,
+    )
 
 async def check_push() -> None:
     while True:
@@ -104,7 +117,8 @@ async def check_push() -> None:
                 await user.save()
                 await send_message(config.push_message, user.user_id)
             else:
-                await bot.send_message(config.ADMINS_ID[0],text="Нет пуша")
+                if config.ADMINS_ID != []:
+                    await bot.send_message(config.ADMINS_ID[0],text="Нет пуша")
 
         users = await User.filter(state=1, updated_at__lt=one_hour_ago)
 

@@ -1,5 +1,6 @@
 from aiogram import Router, F
-from aiogram.types import Message
+from aiogram.types import Message, ContentType
+from loguru import logger
 
 from config_reader import config, google_sheet
 from db.models import User
@@ -23,9 +24,17 @@ async def finish_handler(message: Message):
 
 @router.message(F.chat.id.in_([*config.CHAT_IDS, config.LAST_CHAT_ID]))
 async def message_handler(message: Message):
-    if message.text != None:
+    logger.info("Message from manager")
+    if message.text == None and message.content_type == ContentType.TEXT:
+        return
+    else:
+        logger.info("Message manager pass")
         chat_id = message.chat.id
-        topic_id = message.reply_to_message.message_thread_id
+        try:
+            topic_id = message.reply_to_message.message_thread_id
+        except:
+            logger.warning("Message from manager without reply")
+            return
         user = await User.get_or_none(chat_id=chat_id, topic_id=topic_id)
         if user is not None:
             try:

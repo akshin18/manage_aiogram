@@ -22,31 +22,38 @@ async def admin_back_handler(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
         "Menu:",
-        reply_markup=get_keyboard(["First Message", "Push Message", "Add chat"]),
+        reply_markup=get_keyboard(["First Message", "Push Message", "Push time"]),
     )
 
 
-@router.message(AdminFilter(), F.text == "Add chat")
-async def add_chat_handler(message: Message, state: FSMContext):
+@router.message(AdminFilter(), F.text == "Push time")
+async def push_time_handler(message: Message):
+    await message.answer(
+        f"Push time: {config.time_to_push} minutes",
+        reply_markup=get_keyboard(["Set push time", "Back"], 1),
+    )
+
+@router.message(AdminFilter(), F.text == "Set push time")
+async def add_time_handler(message: Message, state: FSMContext):
     await state.set_state(AddChat.add_chat)
     await message.answer(
-        "Type chat id example: -102100002", reply_markup=get_keyboard(["Back"])
+        "Type minutes:", reply_markup=get_keyboard(["Back"])
     )
 
 
 @router.message(AdminFilter(), AddChat.add_chat)
-async def finish_add_chat(message: Message, state: FSMContext):
+async def finish_time_chat(message: Message, state: FSMContext):
     try:
-        chat_id = int(message.text)
-        config.CHAT_IDS.append(chat_id)
+        time = int(message.text)
+        config.time_to_push = time
         await state.clear()
         await message.answer(
-            "Chat successfully added",
-            reply_markup=get_keyboard(["First Message", "Push Message", "Add chat"]),
+            "time successfully added",
+            reply_markup=get_keyboard(["First Message", "Push Message", "Push time"]),
         )
     except:
         await message.answer(
-            "Invalid chat id format", reply_markup=get_keyboard(["Back"])
+            "Invalid time format", reply_markup=get_keyboard(["Back"])
         )
 
 
@@ -142,5 +149,5 @@ async def view_push_message_handler(message: Message):
 async def admin_handler(message: Message):
     await message.answer(
         "Menu:",
-        reply_markup=get_keyboard(["First Message", "Push Message", "Add chat"]),
+        reply_markup=get_keyboard(["First Message", "Push Message", "Push time"]),
     )

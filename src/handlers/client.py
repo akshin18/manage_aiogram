@@ -1,6 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.types import ChatJoinRequest
+from loguru import logger
 
 from config_reader import config, google_sheet
 from utils.func import send_message, req_user
@@ -12,7 +13,10 @@ router = Router()
 
 @router.chat_join_request(F.chat.id == int(config.CHANNEL_ID.get_secret_value()))
 async def chat_join_handler(request: ChatJoinRequest):
-    await request.approve()
+    try:
+        await request.approve()
+    except:
+        logger.warning("Chat join request failed")
     await req_user(request)
 
 

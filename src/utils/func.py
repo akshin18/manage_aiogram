@@ -4,6 +4,7 @@ import logging
 from typing import Union
 
 from aiogram.types import Message, ChatJoinRequest, ContentType
+from loguru import logger
 
 from config_reader import config, google_sheet
 from db.models import User
@@ -70,7 +71,8 @@ async def send_message(
         else:
             print("Error")
     except:
-        if message.chat.id in config.CHAT_IDS:
+        if message.chat.id in [*config.CHAT_IDS, config.LAST_CHAT_ID]:
+            google_sheet.update_active(message.from_user.id)
             await message.answer("Бот заблокирован!!!!!!")
 
 
@@ -84,19 +86,28 @@ async def req_user(message: Union[Message, ChatJoinRequest]):
         username=message.from_user.username,
         user_id=message.from_user.id,
         chat_id=config.CHAT_IDS[config.manager_index],
-        invite_link=message.invite_link.invite_link if isinstance(message, ChatJoinRequest) else "None"
+        invite_link=(
+            message.invite_link.invite_link
+            if isinstance(message, ChatJoinRequest)
+            else "None"
+        ),
     )
     add_user_to_sheet(user)
     if config.first_message != None:
         await send_message(config.first_message, message.from_user.id)
     else:
         if config.ADMINS_ID != []:
-            await bot.send_message(config.ADMINS_ID[0],text="Нет Первого сообщения")
-            await message.bot.send_message(message.from_user.id, "))")
+            await bot.send_message(config.ADMINS_ID[0], text="Нет Первого сообщения")
+            try:
+                await message.bot.send_message(message.from_user.id, "))")
+            except:
+                google_sheet.update_active(message.from_user.id)
 
-def add_user_to_sheet(user:User):
+
+def add_user_to_sheet(user: User):
     google_sheet.create_user(
-        user.created_at.strftime("%d/%m/%Y %H:%M"),
+        user.created_at.strftime("%d/%m/%Y"),
+        user.created_at.strftime("%H:%M"),
         user.user_id,
         user.chat_id,
         user.invite_link,
@@ -104,35 +115,53 @@ def add_user_to_sheet(user:User):
         username=user.username,
     )
 
+
 async def check_push() -> None:
     while True:
         now = datetime.datetime.now()
+        spec_time = now - datetime.timedelta(minutes=config.time_to_push)
         one_hour_ago = now - datetime.timedelta(hours=1)
 
-        users = await User.filter(state=0, created_at__lt=one_hour_ago)
-
+        users = await User.filter(state=0, created_at__lt=spec_time)
         for user in users:
             if config.push_message != None:
-                await user.update_from_dict({"state": 1})
-                await user.save()
-                await send_message(config.push_message, user.user_id)
+                try:
+                    await send_message(config.push_message, user.user_id)
+                    await user.update_from_dict({"state": 1})
+                    await user.save()
+                    logger.info(f"Push message to {user.user_id}")
+                except:
+                    logger.warning(f"Push message to {user.user_id}")
+                    google_sheet.update_active(user.user_id)
+
             else:
                 if config.ADMINS_ID != []:
-                    await bot.send_message(config.ADMINS_ID[0],text="Нет пуша")
+                    await bot.send_message(config.ADMINS_ID[0], text="Нет пуша")
+                try:
+                    await bot.send_message(user.user_id, text="Привет еще раз")
+                    await user.update_from_dict({"state": 1})
+                    await user.save()
+                    logger.success(f"Push message to {user.user_id}")
+                except:
+                    logger.warning(f"Push message to {user.user_id}")
+                    google_sheet.update_active(user.user_id)
 
         users = await User.filter(state=1, updated_at__lt=one_hour_ago)
 
         for user in users:
             await user.update_from_dict({"state": 5})
             await user.save()
-            chat_id = config.CHAT_IDS[user.manager_index]
+            chat_id = user.chat_id
             name = f"{user.name} #{user.user_id}"
             topic = await bot.create_forum_topic(chat_id, name=name)
             topic_id = topic.message_thread_id
-            await bot.send_message(
-                chat_id,
-                text="Пользователь не ответил на пуш",
-                message_thread_id=topic_id,
-            )
+            try:
+                await bot.send_message(
+                    chat_id,
+                    text="Пользователь не ответил на пуш",
+                    message_thread_id=topic_id,
+                )
+            except:
+                google_sheet.update_active(user.user_id)
         logging.info("Check push done")
         await asyncio.sleep(60 * 10)

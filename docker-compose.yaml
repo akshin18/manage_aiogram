@@ -1,7 +1,10 @@
-version: '3'
+version: '3.8'
 
 services:
   bot:
-    build: .
+    build: 
+      context: .
+      args:
+        - DOCKER_BUILDKIT: 1
     volumes:
       - ./:/app

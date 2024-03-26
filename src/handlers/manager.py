@@ -9,6 +9,17 @@ from utils.func import send_message
 
 router = Router()
 
+@router.message(F.chat.id.in_(config.CHAT_IDS), F.text == "dep#")
+async def def_handler(message: Message):
+    user = await User.get(chat_id=message.chat.id, topic_id=message.message_thread_id)
+    if user != None:
+        google_sheet.dep(user.user_id)
+
+@router.message(F.chat.id.in_(config.CHAT_IDS), F.text == "reg#")
+async def reg_handler(message: Message):
+    user = await User.get(chat_id=message.chat.id, topic_id=message.message_thread_id)
+    if user != None:
+        google_sheet.reg(user.user_id)
 
 @router.message(F.chat.id.in_(config.CHAT_IDS), F.text == "finish#")
 async def finish_handler(message: Message):

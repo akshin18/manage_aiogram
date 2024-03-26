@@ -103,6 +103,18 @@ class Google_sheet:
         except:
             logger.warning("update error")
 
+    def reg(self, user_id):
+        try:
+            self.sheet.update_cell(self.sheet.find(str(user_id)).row, 12, "true")
+        except:
+            logger.warning("update error")
+
+    def dep(self, user_id):
+        try:
+            self.sheet.update_cell(self.sheet.find(str(user_id)).row, 13, "true")
+        except:
+            logger.warning("update error")
+
 
 config = Settings()
 google_sheet = Google_sheet()

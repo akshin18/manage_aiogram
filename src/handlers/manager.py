@@ -27,10 +27,13 @@ async def finish_handler(message: Message):
     old_topic_id = message.reply_to_message.message_thread_id
     topic = await message.bot.create_forum_topic(config.LAST_CHAT_ID, name=topic_name)
     topic_id = topic.message_thread_id
-    user = await User.get(topic_id=old_topic_id, chat_id=message.chat.id)
-    google_sheet.update_finish(user.user_id)
-    await user.update_from_dict({"topic_id": topic_id, "chat_id": config.LAST_CHAT_ID, "state": 6})
-    await user.save()
+    user = await User.get_or_none(topic_id=old_topic_id, chat_id=message.chat.id)
+    if user != None:
+        google_sheet.update_finish(user.user_id)
+        await user.update_from_dict({"topic_id": topic_id, "chat_id": config.LAST_CHAT_ID, "state": 6})
+        await user.save()
+    else:
+        await message.answer("Не найден юзер")
 
 
 @router.message(F.chat.id.in_([*config.CHAT_IDS, config.LAST_CHAT_ID]))

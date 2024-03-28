@@ -7,6 +7,7 @@ from pydantic import SecretStr
 from aiogram.types import Message
 from google.oauth2.service_account import Credentials
 import gspread
+from gspread.cell import Cell
 from loguru import logger
 
 
@@ -69,7 +70,7 @@ class Google_sheet:
             finish_date,
             finish_time,
         ]
-        self.sheet.append_row(data)
+        self.sheet.append_row(data,table_range="A1")
 
     def update_fm(self, user_id):
         now = datetime.now()
@@ -77,8 +78,8 @@ class Google_sheet:
             # self.sheet.update_cell(self.sheet.find(str(user_id)).row, 2, now)
             self.sheet.update_cells(
                 [
-                    (self.sheet.find(str(user_id)).row, 3, now.strftime("%d/%m/%Y")),
-                    (self.sheet.find(str(user_id)).row, 4, now.strftime("%H:%M")),
+                    Cell(self.sheet.find(str(user_id)).row, 3, now.strftime("%d/%m/%Y")),
+                    Cell(self.sheet.find(str(user_id)).row, 4, now.strftime("%H:%M")),
                 ]
             )
         except:
@@ -90,8 +91,8 @@ class Google_sheet:
             # self.sheet.update_cell(self.sheet.find(str(user_id)).row, 8, now)
             self.sheet.update_cells(
                 [
-                    (self.sheet.find(str(user_id)).row, 10, now.strftime("%d/%m/%Y")),
-                    (self.sheet.find(str(user_id)).row, 11, now.strftime("%H:%M")),
+                    Cell(self.sheet.find(str(user_id)).row, 10, now.strftime("%d/%m/%Y")),
+                    Cell(self.sheet.find(str(user_id)).row, 11, now.strftime("%H:%M")),
                 ]
             )
         except:

@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from tortoise import Tortoise
+import pytz
 
 from handlers.admin import router as admin_router
 from handlers.client import router as client_router
@@ -15,6 +16,7 @@ async def on_startup() -> None:
     await Tortoise.init(
         db_url=config.DB_URL.get_secret_value(),
         modules={"models": ["db.models"]},
+        timezone="Europe/Moscow",
     )
     await Tortoise.generate_schemas()
     asyncio.create_task(check_push())

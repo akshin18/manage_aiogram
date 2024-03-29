@@ -9,6 +9,7 @@ from google.oauth2.service_account import Credentials
 import gspread
 from gspread.cell import Cell
 from loguru import logger
+import pytz
 
 
 class Settings(BaseSettings):
@@ -42,6 +43,7 @@ class Google_sheet:
         self.workbook = self.client.open_by_key(self.sheet_id)
 
         self.sheet = self.workbook.sheet1
+        self.moscow_timezone = pytz.timezone('Europe/Moscow')
 
     def create_user(
         self,
@@ -119,3 +121,4 @@ class Google_sheet:
 
 config = Settings()
 google_sheet = Google_sheet()
+os.environ['TZ'] = 'Europe/Moscow'

@@ -5,6 +5,7 @@ from typing import Union
 
 from aiogram.types import Message, ChatJoinRequest, ContentType
 from loguru import logger
+import pytz
 
 from config_reader import config, google_sheet
 from db.models import User
@@ -72,7 +73,7 @@ async def send_message(
             print("Error")
     except:
         if message.chat.id in [*config.CHAT_IDS, config.LAST_CHAT_ID]:
-            google_sheet.update_active(message.from_user.id)
+            google_sheet.update_active(chat_id)
             await message.answer("Бот заблокирован!!!!!!")
 
 
@@ -164,4 +165,4 @@ async def check_push() -> None:
             except:
                 google_sheet.update_active(user.user_id)
         logging.info("Check push done")
-        await asyncio.sleep(60 * 10)
+        await asyncio.sleep(60)

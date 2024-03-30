@@ -118,10 +118,13 @@ def add_user_to_sheet(user: User):
 
 
 async def check_push() -> None:
+    moscow_tz = pytz.timezone('Europe/Moscow')
     while True:
-        now = datetime.datetime.now()
+        now = datetime.datetime.now(moscow_tz)
         spec_time = now - datetime.timedelta(minutes=config.time_to_push)
         one_hour_ago = now - datetime.timedelta(hours=1)
+        logger.info(f"Check push at {now}")
+        logger.info(f"spec_time {spec_time}")
 
         users = await User.filter(state=0, created_at__lt=spec_time)
         for user in users:

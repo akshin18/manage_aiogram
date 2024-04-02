@@ -69,8 +69,15 @@ async def send_message(
                 message_thread_id=topic_id,
                 reply_markup=reply_markup,
             )
+        elif message.content_type == ContentType.VIDEO_NOTE:
+            await message.bot.send_video_note(
+                chat_id,
+                video_note=message.video_note.file_id,
+                message_thread_id=topic_id,
+                reply_markup=reply_markup,
+            )
         else:
-            print("Error")
+            print("Error",message.content_type)
     except:
         if message.chat.id in [*config.CHAT_IDS, config.LAST_CHAT_ID]:
             google_sheet.update_active(chat_id)

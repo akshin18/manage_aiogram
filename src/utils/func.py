@@ -135,7 +135,7 @@ async def check_push() -> None:
         logger.info(f"spec_time {spec_time}")
 
         users = await User.filter(state=0, created_at__lt=spec_time)
-        logger.info(f"Users count {len(users)}")
+        logger.info(f"Push Users count {len(users)}")
         
         for user in users:
             if config.push_message != None:
@@ -161,20 +161,22 @@ async def check_push() -> None:
                     google_sheet.update_active(user.user_id)
 
         users = await User.filter(state=1, updated_at__lt=one_hour_ago)
+        logger.info(f"Topic Users count {len(users)}")
 
         for user in users:
-            await user.update_from_dict({"state": 5})
-            await user.save()
             chat_id = user.chat_id
             name = f"{user.name} #{user.user_id}"
             topic = await bot.create_forum_topic(chat_id, name=name)
             topic_id = topic.message_thread_id
+            await user.update_from_dict({"state": 5, "topic_id": topic_id})
+            await user.save()
             try:
                 await bot.send_message(
                     chat_id,
                     text="Пользователь не ответил на пуш",
                     message_thread_id=topic_id,
                 )
+                google_sheet.auto(user.user_id)
             except:
                 google_sheet.update_active(user.user_id)
         logging.info("Check push done")

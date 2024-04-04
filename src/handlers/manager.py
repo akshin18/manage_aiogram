@@ -45,7 +45,6 @@ async def message_handler(message: Message):
         logger.info("Message manager pass")
         chat_id = message.chat.id
         try:
-            logger.info(f"{message.reply_to_message}")
             topic_id = message.reply_to_message.message_thread_id
             user = await User.get_or_none(chat_id=chat_id, topic_id=topic_id)
             if user is not None:

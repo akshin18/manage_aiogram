@@ -118,6 +118,12 @@ class Google_sheet:
         except:
             logger.warning("update error")
 
+    def auto(self, user_id):
+        try:
+            self.sheet.update_cell(self.sheet.find(str(user_id)).row, 14, "auto")
+        except:
+            logger.warning("update error")
+
 
 config = Settings()
 google_sheet = Google_sheet()

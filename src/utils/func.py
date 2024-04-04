@@ -77,7 +77,7 @@ async def send_message(
                 reply_markup=reply_markup,
             )
         else:
-            print("Error",message.content_type)
+            logger.warning(f"Error, {message.content_type}")
     except:
         if message.chat.id in [*config.CHAT_IDS, config.LAST_CHAT_ID]:
             google_sheet.update_active(chat_id)
@@ -134,6 +134,8 @@ async def check_push() -> None:
         logger.info(f"spec_time {spec_time}")
 
         users = await User.filter(state=0, created_at__lt=spec_time)
+        logger.info(f"Users count {len(users)}")
+        
         for user in users:
             if config.push_message != None:
                 try:

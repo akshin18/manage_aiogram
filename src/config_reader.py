@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     manager_index: int = 0
     first_message: Union[Message, None] = None
     push_message: Union[Message, None] = None
-    time_to_push: int = 60
+    time_to_push: int = 2
 
     model_config = SettingsConfigDict(
         env_file=".env",

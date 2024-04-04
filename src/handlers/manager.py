@@ -45,14 +45,16 @@ async def message_handler(message: Message):
         logger.info("Message manager pass")
         chat_id = message.chat.id
         try:
+            logger.info(f"{message.reply_to_message}")
             topic_id = message.reply_to_message.message_thread_id
+            user = await User.get_or_none(chat_id=chat_id, topic_id=topic_id)
+            if user is not None:
+                try:
+                    await send_message(message, user.user_id)
+                except:
+                    google_sheet.update_active(user.user_id)
+                    await message.answer("Юзер заблокировал бота")
         except:
             logger.warning("Message from manager without reply")
             return
-        user = await User.get_or_none(chat_id=chat_id, topic_id=topic_id)
-        if user is not None:
-            try:
-                await send_message(message, user.user_id)
-            except:
-                google_sheet.update_active(user.user_id)
-                await message.answer("Юзер заблокировал бота")
+        

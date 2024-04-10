@@ -75,7 +75,7 @@ class Google_sheet:
         self.sheet.append_row(data,table_range="A1")
 
     def update_fm(self, user_id):
-        now = datetime.now()
+        now = datetime.now(self.moscow_timezone)
         try:
             # self.sheet.update_cell(self.sheet.find(str(user_id)).row, 2, now)
             self.sheet.update_cells(
@@ -88,7 +88,7 @@ class Google_sheet:
             logger.warning("update error")
 
     def update_finish(self, user_id):
-        now = datetime.now()
+        now = datetime.now(self.moscow_timezone)
         try:
             # self.sheet.update_cell(self.sheet.find(str(user_id)).row, 8, now)
             self.sheet.update_cells(

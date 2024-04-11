@@ -21,8 +21,8 @@ class Settings(BaseSettings):
     ADMINS_ID: List
     SHEET_ID: SecretStr
     manager_index: int = 0
-    first_message: Union[Message, None] = None
-    push_message: Union[Message, None] = None
+    first_message: Union[Message, str ,None]
+    push_message: Union[Message, str, None]
     time_to_push: int = 2
 
     model_config = SettingsConfigDict(
@@ -84,8 +84,8 @@ class Google_sheet:
                     Cell(self.sheet.find(str(user_id)).row, 4, now.strftime("%H:%M")),
                 ]
             )
-        except:
-            logger.warning("update error")
+        except Exception as e:
+            logger.error(f"update error {e}")
 
     def update_finish(self, user_id):
         now = datetime.now(self.moscow_timezone)
@@ -97,34 +97,35 @@ class Google_sheet:
                     Cell(self.sheet.find(str(user_id)).row, 11, now.strftime("%H:%M")),
                 ]
             )
-        except:
-            logger.warning("update error")
+        except Exception as e:
+            logger.error(f"update error {e}")
 
     def update_active(self, user_id):
         try:
             self.sheet.update_cell(self.sheet.find(str(user_id)).row, 9, "false")
-        except:
-            logger.warning("update error")
+        except Exception as e:
+            logger.error(f"update error {e}")
 
     def reg(self, user_id):
         try:
             self.sheet.update_cell(self.sheet.find(str(user_id)).row, 12, "true")
-        except:
-            logger.warning("update error")
+        except Exception as e:
+            logger.error(f"update error {e}")
 
     def dep(self, user_id):
         try:
             self.sheet.update_cell(self.sheet.find(str(user_id)).row, 13, "true")
-        except:
-            logger.warning("update error")
+        except Exception as e:
+            logger.error(f"update error {e}")
 
     def auto(self, user_id):
         try:
             self.sheet.update_cell(self.sheet.find(str(user_id)).row, 14, "auto")
-        except:
-            logger.warning("update error")
+        except Exception as e:
+            logger.error(f"update error {e}")
 
 
 config = Settings()
+logger.warning(config.first_message)
 google_sheet = Google_sheet()
 os.environ['TZ'] = 'Europe/Moscow'

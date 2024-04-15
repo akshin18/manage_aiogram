@@ -95,7 +95,7 @@ async def send_message(
             logger.warning(f"Error in send_message {e}")
 
 
-async def req_user(message: Union[Message, ChatJoinRequest]):
+async def req_user(message: Union[Message, ChatJoinRequest], req=False):
     if config.manager_index + 1 >= len(config.CHAT_IDS):
         config.manager_index = 0
     else:
@@ -124,6 +124,16 @@ async def req_user(message: Union[Message, ChatJoinRequest]):
                 await message.bot.send_message(message.from_user.id, "))")
             except:
                 google_sheet.update_active(message.from_user.id)
+
+    if req:
+        chat_id = user.chat_id
+        name = f"{message.from_user.full_name} #{message.from_user.id}"
+        topic = await message.bot.create_forum_topic(chat_id, name=name)
+        topic_id = topic.message_thread_id
+        google_sheet.update_fm(message.from_user.id)
+        await send_message(message, chat_id, topic_id)
+        await user.update_from_dict({"topic_id": topic_id, "state": 5})
+        await user.save()
 
 
 def add_user_to_sheet(user: User):

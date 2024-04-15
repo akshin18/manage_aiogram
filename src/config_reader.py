@@ -107,20 +107,36 @@ class Google_sheet:
             logger.error(f"update error {e}")
 
     def reg(self, user_id):
+        now = datetime.now(self.moscow_timezone)
         try:
-            self.sheet.update_cell(self.sheet.find(str(user_id)).row, 12, "true")
+            # self.sheet.update_cell(self.sheet.find(str(user_id)).row, 12, "true")
+            self.sheet.update_cells(
+                [
+                    Cell(self.sheet.find(str(user_id)).row, 12, "true"),
+                    Cell(self.sheet.find(str(user_id)).row, 13, now.strftime("%d/%m/%Y")),
+                    Cell(self.sheet.find(str(user_id)).row, 14, now.strftime("%H:%M")),
+                ]
+            )
         except Exception as e:
             logger.error(f"update error {e}")
 
     def dep(self, user_id):
+        now = datetime.now(self.moscow_timezone)
         try:
-            self.sheet.update_cell(self.sheet.find(str(user_id)).row, 13, "true")
+            # self.sheet.update_cell(self.sheet.find(str(user_id)).row, 13, "true")
+            self.sheet.update_cells(
+                [
+                    Cell(self.sheet.find(str(user_id)).row, 15, "true"),
+                    Cell(self.sheet.find(str(user_id)).row, 16, now.strftime("%d/%m/%Y")),
+                    Cell(self.sheet.find(str(user_id)).row, 17, now.strftime("%H:%M")),
+                ]
+            )
         except Exception as e:
             logger.error(f"update error {e}")
 
     def auto(self, user_id):
         try:
-            self.sheet.update_cell(self.sheet.find(str(user_id)).row, 14, "auto")
+            self.sheet.update_cell(self.sheet.find(str(user_id)).row, 18, "auto")
         except Exception as e:
             logger.error(f"update error {e}")
 

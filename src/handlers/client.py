@@ -24,6 +24,10 @@ async def chat_join_handler(request: ChatJoinRequest):
 async def req_handler(message: Message):
     await req_user(message)
 
+@router.message(F.text == "/start")
+async def req_handler(message: Message):
+    await req_user(message, req=True)
+
 
 @router.message(F.text == "q")
 async def req_handler(message: Message):

@@ -109,10 +109,9 @@ class Google_sheet:
     def reg(self, user_id):
         now = datetime.now(self.moscow_timezone)
         try:
-            # self.sheet.update_cell(self.sheet.find(str(user_id)).row, 12, "true")
             self.sheet.update_cells(
                 [
-                    Cell(self.sheet.find(str(user_id)).row, 12, "TRUE"),
+                    Cell(self.sheet.find(str(user_id)).row, 12, "yes"),
                     Cell(self.sheet.find(str(user_id)).row, 13, now.strftime("%d/%m/%Y")),
                     Cell(self.sheet.find(str(user_id)).row, 14, now.strftime("%H:%M")),
                 ]
@@ -123,10 +122,9 @@ class Google_sheet:
     def dep(self, user_id):
         now = datetime.now(self.moscow_timezone)
         try:
-            # self.sheet.update_cell(self.sheet.find(str(user_id)).row, 13, "true")
             self.sheet.update_cells(
                 [
-                    Cell(self.sheet.find(str(user_id)).row, 15, "TRUE"),
+                    Cell(self.sheet.find(str(user_id)).row, 15, "yes"),
                     Cell(self.sheet.find(str(user_id)).row, 16, now.strftime("%d/%m/%Y")),
                     Cell(self.sheet.find(str(user_id)).row, 17, now.strftime("%H:%M")),
                 ]

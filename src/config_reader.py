@@ -132,6 +132,12 @@ class Google_sheet:
         except Exception as e:
             logger.error(f"update error {e}")
 
+    def geo(self, user_id, geo):
+        try:
+            self.sheet.update_cell(self.sheet.find(str(user_id)).row, 19, geo)
+        except Exception as e:
+            logger.error(f"update error {e}")
+
     def auto(self, user_id):
         try:
             self.sheet.update_cell(self.sheet.find(str(user_id)).row, 18, "auto")

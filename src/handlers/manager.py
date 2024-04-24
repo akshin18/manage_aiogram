@@ -21,6 +21,13 @@ async def reg_handler(message: Message):
     if user != None:
         google_sheet.reg(user.user_id)
 
+@router.message(F.chat.id.in_(config.CHAT_IDS),F.text.startswith( "geo#"))
+async def geo_handler(message: Message):
+    geo = message.text.split(" ")[1]
+    user = await User.get(chat_id=message.chat.id, topic_id=message.message_thread_id)
+    if user != None:
+        google_sheet.geo(user.user_id, geo)
+
 @router.message(F.chat.id.in_(config.CHAT_IDS), F.text == "finish#")
 async def finish_handler(message: Message):
     topic_name = message.reply_to_message.forum_topic_created.name

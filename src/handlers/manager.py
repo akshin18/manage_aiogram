@@ -15,13 +15,16 @@ async def def_handler(message: Message):
     if user != None:
         google_sheet.dep(user.user_id)
 
-@router.message(F.chat.id.in_(config.CHAT_IDS), F.text == "reg#")
+@router.message(F.chat.id.in_(config.CHAT_IDS), F.text.startswith("reg#"))
 async def reg_handler(message: Message):
     user = await User.get(chat_id=message.chat.id, topic_id=message.message_thread_id)
     if user != None:
-        google_sheet.reg(user.user_id)
+        reg_id = message.text.strip().split(" ")[-1]
+        user.reg_id = reg_id
+        await user.save()
+        google_sheet.reg(user.user_id,reg_id)
 
-@router.message(F.chat.id.in_(config.CHAT_IDS),F.text.startswith( "geo#"))
+@router.message(F.chat.id.in_(config.CHAT_IDS),F.text.startswith("geo#"))
 async def geo_handler(message: Message):
     geo = message.text.split(" ")[1]
     user = await User.get(chat_id=message.chat.id, topic_id=message.message_thread_id)
@@ -39,6 +42,11 @@ async def finish_handler(message: Message):
         google_sheet.update_finish(user.user_id)
         await user.update_from_dict({"topic_id": topic_id, "chat_id": config.LAST_CHAT_ID, "state": 6})
         await user.save()
+        await message.bot.send_message(
+                    user.chat_id,
+                    text=f"«ID: {user.reg_id}»",
+                    message_thread_id=topic_id
+                )
     else:
         await message.answer("Не найден юзер")
 

@@ -106,7 +106,7 @@ class Google_sheet:
         except Exception as e:
             logger.error(f"update error {e}")
 
-    def reg(self, user_id):
+    def reg(self, user_id, reg_id):
         now = datetime.now(self.moscow_timezone)
         try:
             self.sheet.update_cells(
@@ -114,6 +114,7 @@ class Google_sheet:
                     Cell(self.sheet.find(str(user_id)).row, 12, "yes"),
                     Cell(self.sheet.find(str(user_id)).row, 13, now.strftime("%d/%m/%Y")),
                     Cell(self.sheet.find(str(user_id)).row, 14, now.strftime("%H:%M")),
+                    Cell(self.sheet.find(str(user_id)).row, 20, reg_id),
                 ]
             )
         except Exception as e:

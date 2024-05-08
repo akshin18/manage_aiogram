@@ -11,6 +11,7 @@ class User(Model):
     chat_id = fields.IntField(null=False)
     
     name = fields.CharField(max_length=50, null=True)
+    reg_id = fields.CharField(max_length=100, null=True)
     username = fields.CharField(max_length=32, null=True)
     state = fields.IntField(null=False, default=0)
     invite_link = fields.CharField(max_length=100, null=True)

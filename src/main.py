@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from tortoise import Tortoise
+from db.models import User
 import pytz
 
 from handlers.admin import router as admin_router

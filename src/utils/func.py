@@ -2,6 +2,7 @@ import datetime
 import asyncio
 import logging
 from typing import Union
+from traceback import format_exc
 
 from aiogram.types import Message, ChatJoinRequest, ContentType
 from loguru import logger
@@ -18,10 +19,10 @@ async def send_message(
     try:
         if isinstance(message, Message):
             if message.content_type == ContentType.TEXT:
-                if not str(chat_id).startswith("-100"):
-                    chat_id = int(f"-100{chat_id}")
+                # if not str(chat_id).startswith("-100"):
+                #     chat_id = int(f"-100{chat_id}")
                 await message.bot.send_message(
-                    chat_id,
+                    int(chat_id),
                     text=message.text,
                     message_thread_id=topic_id,
                     reply_markup=reply_markup,
@@ -90,7 +91,7 @@ async def send_message(
             logger.warning(f"Error, {message.content_type}")
     except Exception as e:
         logger.error("User blocked bot")
-        logger.error(str(e))
+        logger.error(str(format_exc()))
         logger.error(str(chat_id))
         if isinstance(message, Message):
             if message.chat.id in [*config.CHAT_IDS, config.LAST_CHAT_ID]:

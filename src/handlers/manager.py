@@ -6,6 +6,7 @@ from config_reader import config, google_sheet
 from db.models import User
 from utils.func import send_message
 
+logger.level("TRACE")
 
 router = Router()
 
@@ -64,10 +65,11 @@ async def message_handler(message: Message):
             user = await User.get_or_none(chat_id=chat_id, topic_id=topic_id)
             if user is not None:
                 try:
+                    logger.info("Try to send message to user")
                     await send_message(message, user.user_id)
                 except Exception as e:
-                    logger.warning("User blocked bot")
-                    logger.warning(str(e))
+                    logger.error("User blocked bot")
+                    logger.error(str(e))
                     google_sheet.update_active(user.user_id)
                     await message.answer("Юзер заблокировал бота")
         except:

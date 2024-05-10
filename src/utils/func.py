@@ -18,6 +18,8 @@ async def send_message(
     try:
         if isinstance(message, Message):
             if message.content_type == ContentType.TEXT:
+                if not str(chat_id).startswith("-100"):
+                    chat_id = int(f"-100{chat_id}")
                 await message.bot.send_message(
                     chat_id,
                     text=message.text,

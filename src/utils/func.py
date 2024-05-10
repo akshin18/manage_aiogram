@@ -87,6 +87,8 @@ async def send_message(
         else:
             logger.warning(f"Error, {message.content_type}")
     except Exception as e:
+        logger.error("User blocked bot")
+        logger.error(str(e))
         if isinstance(message, Message):
             if message.chat.id in [*config.CHAT_IDS, config.LAST_CHAT_ID]:
                 google_sheet.update_active(chat_id)

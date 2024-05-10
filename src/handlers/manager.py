@@ -68,8 +68,6 @@ async def message_handler(message: Message):
                     logger.info("Try to send message to user")
                     await send_message(message, user.user_id)
                 except Exception as e:
-                    logger.error("User blocked bot")
-                    logger.error(str(e))
                     google_sheet.update_active(user.user_id)
                     await message.answer("Юзер заблокировал бота")
         except:

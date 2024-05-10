@@ -93,10 +93,16 @@ async def send_message(
         logger.error("User blocked bot")
         logger.error(str(format_exc()))
         logger.error(str(chat_id))
-        a = await message.bot.get_chat(chat_id)
-        logger.error(str(a))
-        b = await message.bot.get_chat(int(f"-100{chat_id}"))
-        logger.error(str(b))
+        try:
+            a = await message.bot.get_chat(chat_id)
+            logger.error(f"{a}")
+        except Exception as e:
+            logger.error(f"Errrrrrrrrrrrrr aaaaaaa {e}")
+        try:
+            b = await message.bot.get_chat(int(f"-100{chat_id}"))
+            logger.error(f"{b}")
+        except Exception as e:
+            logger.error(f"Errrrrrrrrrrrrr bbbbbbb {e}")
         logger.error("Errrrrrrrrrrrrr")
         if isinstance(message, Message):
             if message.chat.id in [*config.CHAT_IDS, config.LAST_CHAT_ID]:

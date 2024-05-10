@@ -94,9 +94,9 @@ async def send_message(
         logger.error(str(format_exc()))
         logger.error(str(chat_id))
         a = await message.bot.get_chat(chat_id)
-        print(a)
+        logger.error(a)
         b = await message.bot.get_chat(int(f"-100{chat_id}"))
-        print(b)
+        logger.error(b)
         if isinstance(message, Message):
             if message.chat.id in [*config.CHAT_IDS, config.LAST_CHAT_ID]:
                 google_sheet.update_active(chat_id)

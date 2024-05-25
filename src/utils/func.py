@@ -19,8 +19,6 @@ async def send_message(
     try:
         if isinstance(message, Message):
             if message.content_type == ContentType.TEXT:
-                if not str(chat_id).startswith("-100"):
-                    chat_id = int(f"-100{chat_id}")
                 await message.bot.send_message(
                     int(chat_id),
                     text=message.text,
@@ -160,7 +158,7 @@ async def check_push() -> None:
         try:
             now = datetime.datetime.now(moscow_tz)
             spec_time = now - datetime.timedelta(minutes=config.time_to_push)
-            one_hour_ago = now - datetime.timedelta(minutes=1)
+            one_hour_ago = now - datetime.timedelta(hours=1)
             logger.info(f"Check push at {now}")
             logger.info(f"spec_time {spec_time}")
 

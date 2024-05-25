@@ -168,7 +168,7 @@ async def check_push() -> None:
             logger.info(f"Push Users count {len(users)}")
             
             for user in users:
-                logger.info(f"send push to {user}")
+                logger.info(f"send push to {user.name=} {user.user_id=} {user.state=} {user.chat_id=} {user.username=} ")
                 if config.push_message != None:
                     try:
                         await send_message(config.push_message, user.user_id)

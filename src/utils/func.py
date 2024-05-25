@@ -19,8 +19,8 @@ async def send_message(
     try:
         if isinstance(message, Message):
             if message.content_type == ContentType.TEXT:
-                # if not str(chat_id).startswith("-100"):
-                #     chat_id = int(f"-100{chat_id}")
+                if not str(chat_id).startswith("-100"):
+                    chat_id = int(f"-100{chat_id}")
                 await message.bot.send_message(
                     int(chat_id),
                     text=message.text,
@@ -91,19 +91,8 @@ async def send_message(
             logger.warning(f"Error, {message.content_type}")
     except Exception as e:
         logger.error("User blocked bot")
-        logger.error(str(format_exc()))
         logger.error(str(chat_id))
-        try:
-            a = await message.bot.get_chat(chat_id)
-            logger.error(f"{a}")
-        except Exception as e:
-            logger.error(f"Errrrrrrrrrrrrr aaaaaaa {e}")
-        try:
-            b = await message.bot.get_chat(int(f"-100{chat_id}"))
-            logger.error(f"{b}")
-        except Exception as e:
-            logger.error(f"Errrrrrrrrrrrrr bbbbbbb {e}")
-        logger.error("Errrrrrrrrrrrrr")
+        logger.error(str(format_exc()))
         if isinstance(message, Message):
             if message.chat.id in [*config.CHAT_IDS, config.LAST_CHAT_ID]:
                 google_sheet.update_active(chat_id)
@@ -171,7 +160,7 @@ async def check_push() -> None:
         try:
             now = datetime.datetime.now(moscow_tz)
             spec_time = now - datetime.timedelta(minutes=config.time_to_push)
-            one_hour_ago = now - datetime.timedelta(hours=1)
+            one_hour_ago = now - datetime.timedelta(minutes=1)
             logger.info(f"Check push at {now}")
             logger.info(f"spec_time {spec_time}")
 
@@ -179,6 +168,7 @@ async def check_push() -> None:
             logger.info(f"Push Users count {len(users)}")
             
             for user in users:
+                logger.info(f"send push to {user}")
                 if config.push_message != None:
                     try:
                         await send_message(config.push_message, user.user_id)

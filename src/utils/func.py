@@ -118,7 +118,7 @@ async def req_user(message: Union[Message, ChatJoinRequest], req=False):
     add_user_to_sheet(user)
     if not created:
         user.update_from_dict({"state": 0})
-        user.save()
+        await user.save()
     if config.first_message != None:
         await send_message(config.first_message, message.from_user.id)
     else:

@@ -158,7 +158,7 @@ async def check_push() -> None:
         try:
             now = datetime.datetime.now(moscow_tz)
             spec_time = now - datetime.timedelta(minutes=config.time_to_push)
-            one_hour_ago = now - datetime.timedelta(hours=1)
+            one_hour_ago = now - datetime.timedelta(minutes=10)
             logger.info(f"Check push at {now}")
             logger.info(f"spec_time {spec_time}")
 

@@ -20,7 +20,7 @@ async def on_startup() -> None:
         timezone="Europe/Moscow",
     )
     await Tortoise.generate_schemas()
-    asyncio.create_task(check_push())
+    # asyncio.create_task(check_push())
 
 
 async def on_shutdown() -> None:

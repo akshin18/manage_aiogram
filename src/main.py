@@ -10,7 +10,7 @@ from handlers.client import router as client_router
 from handlers.manager import router as manager_router
 from config_reader import config
 from app import bot, dp
-from utils.func import check_push
+from utils.func import old_check_push
 
 
 async def on_startup() -> None:
@@ -20,7 +20,7 @@ async def on_startup() -> None:
         timezone="Europe/Moscow",
     )
     await Tortoise.generate_schemas()
-    # asyncio.create_task(check_push())
+    asyncio.create_task(old_check_push())
 
 
 async def on_shutdown() -> None:

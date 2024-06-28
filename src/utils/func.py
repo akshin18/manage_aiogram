@@ -158,12 +158,18 @@ async def old_check_push() -> None:
         try:
             now = datetime.datetime.now(moscow_tz)
             spec_time = now - datetime.timedelta(minutes=config.time_to_push)
-            one_hour_ago = now - datetime.timedelta(minutes=10)
+            spec_time2 = now - datetime.timedelta(minutes=config.time_to_push2)
+            spec_time3 = now - datetime.timedelta(minutes=config.time_to_push3)
+            # one_hour_ago = now - datetime.timedelta(minutes=10)
             logger.info(f"Check push at {now}")
             logger.info(f"spec_time {spec_time}")
 
             users = await User.filter(state=0, created_at__lt=spec_time)
+            users2 = await User.filter(state=1, created_at__lt=spec_time2)
+            users3 = await User.filter(state=2, created_at__lt=spec_time3)
             logger.info(f"Push Users count {len(users)}")
+            logger.info(f"Push2 Users count {len(users2)}")
+            logger.info(f"Push3 Users count {len(users3)}")
             
             for user in users:
                 logger.info(f"send push to {user.name=} {user.user_id=} {user.state=} {user.chat_id=} {user.username=} ")
@@ -188,90 +194,77 @@ async def old_check_push() -> None:
                     except:
                         logger.warning(f"Push message to {user.user_id}")
                         google_sheet.update_active(user.user_id)
-
-            users = await User.filter(state=1, updated_at__lt=one_hour_ago)
-            logger.info(f"Topic Users count {len(users)}")
-
-            for user in users:
-                chat_id = user.chat_id
-                name = f"{user.name} #{user.user_id}"
-                topic = await bot.create_forum_topic(chat_id, name=name)
-                topic_id = topic.message_thread_id
-                await user.update_from_dict({"state": 5, "topic_id": topic_id})
-                await user.save()
-                try:
-                    await bot.send_message(
-                        chat_id,
-                        text="Пользователь не ответил на пуш",
-                        message_thread_id=topic_id,
-                    )
-                    google_sheet.auto(user.user_id)
-                except:
-                    google_sheet.update_active(user.user_id)
-            logging.info("Check push done")
-            await asyncio.sleep(60)
-        except Exception as e:
-            logger.error(f"Check push error: {e}")
-            await asyncio.sleep(60)
-
-async def check_push() -> None:
-    moscow_tz = pytz.timezone('Europe/Moscow')
-    while True:
-        try:
-            now = datetime.datetime.now(moscow_tz)
-            spec_time = now - datetime.timedelta(minutes=config.time_to_push)
-            one_hour_ago = now - datetime.timedelta(minutes=10)
-            logger.info(f"Check push at {now}")
-            logger.info(f"spec_time {spec_time}")
-
-            # users = await User.filter(state=0, created_at__lt=spec_time)
-            # logger.info(f"Push Users count {len(users)}")
             
+
+            for user in users2:
+                logger.info(f"send push2 to {user.name=} {user.user_id=} {user.state=} {user.chat_id=} {user.username=} ")
+                if config.push_message2 != None:
+                    try:
+                        await send_message(config.push_message2, user.user_id)
+                        await user.update_from_dict({"state": 2})
+                        await user.save()
+                        logger.info(f"Push message to {user.user_id}")
+                    except:
+                        logger.warning(f"Push message to {user.user_id}")
+                        google_sheet.update_active(user.user_id)
+
+                else:
+                    if config.ADMINS_ID != []:
+                        await bot.send_message(config.ADMINS_ID[0], text="Нет пуша")
+                    try:
+                        await bot.send_message(user.user_id, text="Привет еще раз")
+                        await user.update_from_dict({"state": 2})
+                        await user.save()
+                        logger.success(f"Push message to {user.user_id}")
+                    except:
+                        logger.warning(f"Push message to {user.user_id}")
+                        google_sheet.update_active(user.user_id)
+
+            
+            for user in users3:
+                logger.info(f"send push3 to {user.name=} {user.user_id=} {user.state=} {user.chat_id=} {user.username=} ")
+                if config.push_message3 != None:
+                    try:
+                        await send_message(config.push_message3, user.user_id)
+                        await user.update_from_dict({"state": 3})
+                        await user.save()
+                        logger.info(f"Push message to {user.user_id}")
+                    except:
+                        logger.warning(f"Push message to {user.user_id}")
+                        google_sheet.update_active(user.user_id)
+
+                else:
+                    if config.ADMINS_ID != []:
+                        await bot.send_message(config.ADMINS_ID[0], text="Нет пуша")
+                    try:
+                        await bot.send_message(user.user_id, text="Привет еще раз")
+                        await user.update_from_dict({"state": 3})
+                        await user.save()
+                        logger.success(f"Push message to {user.user_id}")
+                    except:
+                        logger.warning(f"Push message to {user.user_id}")
+                        google_sheet.update_active(user.user_id)
+            # users = await User.filter(state=1, updated_at__lt=one_hour_ago)
+            # logger.info(f"Topic Users count {len(users)}")
+
             # for user in users:
-            #     logger.info(f"send push to {user.name=} {user.user_id=} {user.state=} {user.chat_id=} {user.username=} ")
-            #     if config.push_message != None:
-            #         try:
-            #             await send_message(config.push_message, user.user_id)
-            #             await user.update_from_dict({"state": 1})
-            #             await user.save()
-            #             logger.info(f"Push message to {user.user_id}")
-            #         except:
-            #             logger.warning(f"Push message to {user.user_id}")
-            #             google_sheet.update_active(user.user_id)
-
-            #     else:
-            #         if config.ADMINS_ID != []:
-            #             await bot.send_message(config.ADMINS_ID[0], text="Нет пуша")
-            #         try:
-            #             await bot.send_message(user.user_id, text="Привет еще раз")
-            #             await user.update_from_dict({"state": 1})
-            #             await user.save()
-            #             logger.success(f"Push message to {user.user_id}")
-            #         except:
-            #             logger.warning(f"Push message to {user.user_id}")
-            #             google_sheet.update_active(user.user_id)
-
-            users = await User.filter(state=0, updated_at__lt=one_hour_ago)
-            logger.info(f"Topic Users count {len(users)}")
-
-            for user in users:
-                chat_id = user.chat_id
-                name = f"{user.name} #{user.user_id}"
-                topic = await bot.create_forum_topic(chat_id, name=name)
-                topic_id = topic.message_thread_id
-                await user.update_from_dict({"state": 5, "topic_id": topic_id})
-                await user.save()
-                try:
-                    await bot.send_message(
-                        chat_id,
-                        text="Пользователь не ответил на пуш",
-                        message_thread_id=topic_id,
-                    )
-                    google_sheet.auto(user.user_id)
-                except:
-                    google_sheet.update_active(user.user_id)
+            #     chat_id = user.chat_id
+            #     name = f"{user.name} #{user.user_id}"
+            #     topic = await bot.create_forum_topic(chat_id, name=name)
+            #     topic_id = topic.message_thread_id
+            #     await user.update_from_dict({"state": 5, "topic_id": topic_id})
+            #     await user.save()
+            #     try:
+            #         await bot.send_message(
+            #             chat_id,
+            #             text="Пользователь не ответил на пуш",
+            #             message_thread_id=topic_id,
+            #         )
+            #         google_sheet.auto(user.user_id)
+            #     except:
+            #         google_sheet.update_active(user.user_id)
             logging.info("Check push done")
-            await asyncio.sleep(60)
+            await asyncio.sleep(10)
         except Exception as e:
             logger.error(f"Check push error: {e}")
             await asyncio.sleep(60)

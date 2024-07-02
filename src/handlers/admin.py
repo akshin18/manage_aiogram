@@ -118,7 +118,7 @@ async def first_message_handler(message: Message):
 
 @router.message(AdminFilter(), F.text == "Push Message")
 async def push_message_handler(message: Message):
-    if config.push_message == None:
+    if not config.push_message:
         await message.answer(
             "Push message is not set",
             reply_markup=get_keyboard(["Set Push Message", "Back"], 1),
@@ -133,7 +133,7 @@ async def push_message_handler(message: Message):
         )
 @router.message(AdminFilter(), F.text == "Push Message2")
 async def push_message_handler2(message: Message):
-    if config.push_message2 == None:
+    if not config.push_message2:
         await message.answer(
             "Push message is not set",
             reply_markup=get_keyboard(["Set Push Message2", "Back"], 1),
@@ -148,7 +148,7 @@ async def push_message_handler2(message: Message):
         )
 @router.message(AdminFilter(), F.text == "Push Message3")
 async def push_message_handler3(message: Message):
-    if config.push_message3 == None:
+    if not config.push_message3:
         await message.answer(
             "Push message is not set",
             reply_markup=get_keyboard(["Set Push Message3", "Back"], 1),
